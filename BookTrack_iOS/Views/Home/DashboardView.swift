@@ -150,7 +150,7 @@ private struct CurrentlyReadingCard: View {
             Text(userBook.book.title)
                 .font(.caption.bold())
                 .lineLimit(2)
-                .frame(width: 100, alignment: .leading)
+                .frame(width: 125, alignment: .leading)
 
             if let pages = userBook.book.pageCount, pages > 0 {
                 ProgressView(value: Double(userBook.currentPage), total: Double(pages))
@@ -167,6 +167,17 @@ private struct CurrentlyReadingCard: View {
 
 private struct RecentBookRow: View {
     let userBook: UserBookDTO
+
+    private var statusColor: Color {
+        switch userBook.status {
+        case .reading:
+            return .blue
+        case .finished:
+            return .green
+        case .dropped:
+            return .red
+        }
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -193,7 +204,7 @@ private struct RecentBookRow: View {
 
             Label(userBook.status.label, systemImage: userBook.status.icon)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(statusColor)
         }
         .padding(.vertical, 4)
     }
@@ -201,4 +212,6 @@ private struct RecentBookRow: View {
 
 #Preview {
     DashboardView()
+        .environmentObject(SessionStore())
+        .environmentObject(DashboardViewModel())
 }

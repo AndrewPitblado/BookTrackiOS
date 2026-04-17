@@ -33,6 +33,17 @@ final class SessionStore: ObservableObject {
             }
     }
 
+    /// No-argument initialiser for SwiftUI previews.
+    init() {
+        let tokenStore = KeychainTokenStore(service: "com.booktrack.ios.preview")
+        let client = NetworkClient(
+            baseURL: URL(string: "http://localhost:5001/api")!,
+            tokenStore: tokenStore
+        )
+        self.authService = AuthService(client: client, tokenStore: tokenStore)
+        self.tokenStore = tokenStore
+    }
+
     /// Called once on app launch to restore session from Keychain token.
     func bootstrap() async {
         guard tokenStore.getAccessToken() != nil else { return }

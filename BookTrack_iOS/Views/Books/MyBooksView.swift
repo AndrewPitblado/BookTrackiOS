@@ -76,7 +76,7 @@ private struct UserBookRow: View {
     let userBook: UserBookDTO
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             // Thumbnail
             AsyncImage(url: userBook.book.thumbnailURL) { image in
                 image.resizable().aspectRatio(contentMode: .fill)
@@ -100,15 +100,19 @@ private struct UserBookRow: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
 
-                HStack(spacing: 8) {
-                    Label(userBook.status.label, systemImage: userBook.status.icon)
-                        .font(.caption)
-                        .foregroundStyle(statusColor(userBook.status))
+                HStack(spacing: 4) {
+                    MetadataLabel(
+                        text: userBook.status.label,
+                        systemImage: userBook.status.icon,
+                        color: statusColor(userBook.status)
+                    )
 
                     if let rating = userBook.rating, rating > 0 {
-                        Label(String(format: "%.1f", rating), systemImage: "star.fill")
-                            .font(.caption)
-                            .foregroundStyle(.orange)
+                        MetadataLabel(
+                            text: String(format: "%.1f", rating),
+                            systemImage: "star.fill",
+                            color: .orange
+                        )
                     }
                 }
             }
@@ -133,6 +137,24 @@ private struct UserBookRow: View {
     }
 }
 
+private struct MetadataLabel: View {
+    let text: String
+    let systemImage: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+                .frame(width: 12)
+            Text(text)
+        }
+        .font(.caption)
+        .foregroundStyle(color)
+    }
+}
+
 #Preview {
     MyBooksView()
+        .environmentObject(SessionStore())
+        .environmentObject(BooksViewModel())
 }
