@@ -29,12 +29,16 @@ final class DashboardViewModel: ObservableObject {
     var finishedCount: Int {
         userBooks.filter { $0.status == .finished }.count
     }
-
     var totalPages: Int {
-        userBooks
+        let finishedPages = userBooks
             .filter { $0.status == .finished }
             .compactMap { $0.book.pageCount }
             .reduce(0, +)
+        let readingPages = userBooks
+            .filter { $0.status == .reading }
+            .map { $0.currentPage }
+            .reduce(0, +)
+        return finishedPages + readingPages
     }
 
     var currentlyReading: [UserBookDTO] {
