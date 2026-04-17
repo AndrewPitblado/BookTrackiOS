@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		F90D34D42F8F9D33008D2925 /* BookTrack_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookTrack_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F90D34D42F8F9D33008D2925 /* BookTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -40,7 +40,7 @@
 		F90D34D52F8F9D33008D2925 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F90D34D42F8F9D33008D2925 /* BookTrack_iOS.app */,
+				F90D34D42F8F9D33008D2925 /* BookTrack.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F90D34D32F8F9D33008D2925 /* BookTrack_iOS */ = {
+		F90D34D32F8F9D33008D2925 /* BookTrack */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F90D34E12F8F9D35008D2925 /* Build configuration list for PBXNativeTarget "BookTrack_iOS" */;
+			buildConfigurationList = F90D34E12F8F9D35008D2925 /* Build configuration list for PBXNativeTarget "BookTrack" */;
 			buildPhases = (
 				F90D34D02F8F9D33008D2925 /* Sources */,
 				F90D34D12F8F9D33008D2925 /* Frameworks */,
@@ -63,11 +63,11 @@
 			fileSystemSynchronizedGroups = (
 				F90D34D62F8F9D33008D2925 /* BookTrack_iOS */,
 			);
-			name = BookTrack_iOS;
+			name = BookTrack;
 			packageProductDependencies = (
 			);
 			productName = BookTrack_iOS;
-			productReference = F90D34D42F8F9D33008D2925 /* BookTrack_iOS.app */;
+			productReference = F90D34D42F8F9D33008D2925 /* BookTrack.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F90D34CF2F8F9D33008D2925 /* Build configuration list for PBXProject "BookTrack_iOS" */;
+			buildConfigurationList = F90D34CF2F8F9D33008D2925 /* Build configuration list for PBXProject "BookTrack" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F90D34D32F8F9D33008D2925 /* BookTrack_iOS */,
+				F90D34D32F8F9D33008D2925 /* BookTrack */,
 			);
 		};
 /* End PBXProject section */
@@ -257,6 +257,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookTrack;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -266,10 +268,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apitblado.BookTrack-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -290,6 +296,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookTrack;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -299,10 +307,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apitblado.BookTrack-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -315,7 +327,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F90D34CF2F8F9D33008D2925 /* Build configuration list for PBXProject "BookTrack_iOS" */ = {
+		F90D34CF2F8F9D33008D2925 /* Build configuration list for PBXProject "BookTrack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F90D34DF2F8F9D35008D2925 /* Debug */,
@@ -324,7 +336,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F90D34E12F8F9D35008D2925 /* Build configuration list for PBXNativeTarget "BookTrack_iOS" */ = {
+		F90D34E12F8F9D35008D2925 /* Build configuration list for PBXNativeTarget "BookTrack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F90D34E22F8F9D35008D2925 /* Debug */,
