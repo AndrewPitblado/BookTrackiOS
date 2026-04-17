@@ -17,7 +17,14 @@
             }
           ],
           "image-name" : "3 – Layer.svg",
-          "name" : "3 – Layer"
+          "name" : "3 – Layer",
+          "position" : {
+            "scale" : 1.25,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
@@ -53,7 +60,14 @@
             }
           ],
           "image-name" : "2 – Layer.svg",
-          "name" : "2 – Layer"
+          "name" : "2 – Layer",
+          "position" : {
+            "scale" : 1.25,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "lighting" : "combined",
@@ -109,13 +123,15 @@
             },
             {
               "appearance" : "tinted",
-              "value" : "automatic"
+              "value" : {
+                "solid" : "display-p3:0.93321,0.95195,0.96783,1.00000"
+              }
             }
           ],
           "image-name" : "1 – Layer.svg",
           "name" : "1 – Layer",
           "position" : {
-            "scale" : 1,
+            "scale" : 1.25,
             "translation-in-points" : [
               0,
               0

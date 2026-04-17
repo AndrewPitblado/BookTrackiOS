@@ -234,10 +234,39 @@ private struct FriendBookRow: View {
 private struct FriendAchievementRow: View {
     let achievement: AchievementDTO
 
+    #if DEBUG
+        #if targetEnvironment(simulator)
+        private static let baseURL = URL(string: "http://localhost:5001")!
+        #else
+        private static let baseURL = URL(string: "http://192.168.2.162:5001")!
+        #endif
+    #else
+    private static let baseURL = URL(string: "https://api.booktrack.apitblado.com")!
+    #endif
+
+    private var iconURL: URL? {
+        guard let icon = achievement.icon, !icon.isEmpty else { return nil }
+        let pngPath = icon
+            .replacingOccurrences(of: "/achievement-icons/", with: "/achievement-icons-png/")
+            .replacingOccurrences(of: ".svg", with: ".png")
+        return Self.baseURL.appendingPathComponent(pngPath)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
-            Text(achievement.tier.emoji)
-                .font(.title2)
+            ZStack {
+                Circle()
+                    .fill(.fill.tertiary)
+                    .frame(width: 36, height: 36)
+
+                if iconURL != nil {
+                    RemoteImageView(url: iconURL, fallbackSystemName: "trophy.fill")
+                        .frame(width: 20, height: 20)
+                } else {
+                    Text(achievement.tier.emoji)
+                        .font(.body)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(achievement.name)
