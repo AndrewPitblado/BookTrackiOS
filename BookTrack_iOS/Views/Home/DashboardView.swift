@@ -52,7 +52,13 @@ struct DashboardView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(dashboardVM.currentlyReading) { userBook in
-                                        CurrentlyReadingCard(userBook: userBook)
+                                        NavigationLink {
+                                            BookDetailView(userBook:userBook)
+                                        } label: {
+                                            CurrentlyReadingCard(userBook: userBook)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .padding(.vertical, 8)
                                     }
                                 }
                                 .padding(.horizontal)
@@ -68,8 +74,13 @@ struct DashboardView: View {
                                 .padding(.horizontal)
 
                             ForEach(dashboardVM.recentBooks) { userBook in
-                                RecentBookRow(userBook: userBook)
-                                    .padding(.horizontal)
+                                NavigationLink {
+                                    BookDetailView(userBook: userBook)
+                                } label: {
+                                    RecentBookRow(userBook: userBook)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal)
                             }
                         }
                     }
@@ -149,7 +160,7 @@ private struct CurrentlyReadingCard: View {
 
             Text(userBook.book.title)
                 .font(.caption.bold())
-                .lineLimit(2)
+                .lineLimit(1)
                 .frame(width: 125, alignment: .leading)
 
             if let pages = userBook.book.pageCount, pages > 0 {

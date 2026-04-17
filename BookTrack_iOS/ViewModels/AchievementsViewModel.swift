@@ -40,6 +40,15 @@ final class AchievementsViewModel: ObservableObject {
     init(service: AchievementService) {
         self.service = service
     }
+    /// No-argument initialiser for SwiftUI previews.
+    init() {
+        let tokenStore = KeychainTokenStore(service: "com.booktrack.ios.preview")
+        let client = NetworkClient(
+            baseURL: URL(string: "http://localhost:5001/api")!,
+            tokenStore: tokenStore
+        )
+        self.service = AchievementService(client: client)
+    }
 
     // MARK: - Computed
 

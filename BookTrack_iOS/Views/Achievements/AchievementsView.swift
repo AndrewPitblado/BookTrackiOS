@@ -13,9 +13,6 @@ struct AchievementsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Summary bar
-                summaryBar
-
                 // Filter & sort controls
                 controlsBar
 
@@ -37,8 +34,18 @@ struct AchievementsView: View {
                     }
                 }
             }
-            .navigationTitle("Achievements")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack(spacing: 1) {
+                        Text("Achievements")
+                            .font(.title3.bold())
+                        Text("\(vm.unlockedCount)/\(vm.progress.count) unlocked • \(vm.totalPoints) pts")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task { await vm.checkForNew() }
@@ -74,31 +81,6 @@ struct AchievementsView: View {
                 Text(vm.checkResultMessage ?? "")
             }
         }
-    }
-
-    // MARK: - Summary Bar
-
-    private var summaryBar: some View {
-        HStack(spacing: 24) {
-            VStack(spacing: 2) {
-                Text("\(vm.unlockedCount)/\(vm.progress.count)")
-                    .font(.title2.bold())
-                Text("Unlocked")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Divider().frame(height: 32)
-            VStack(spacing: 2) {
-                Text("\(vm.totalPoints)")
-                    .font(.title2.bold())
-                Text("Points")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(.fill.tertiary)
     }
 
     // MARK: - Controls
@@ -251,4 +233,7 @@ private struct AchievementCard: View {
 
 #Preview {
     AchievementsView()
+        .environmentObject(SessionStore())
+        .environmentObject(AchievementsViewModel())
+    
 }
