@@ -9,11 +9,14 @@ import SwiftUI
 
 @main
 struct BookTrackApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @StateObject private var sessionStore: SessionStore
     @StateObject private var booksVM: BooksViewModel
     @StateObject private var dashboardVM: DashboardViewModel
     @StateObject private var achievementsVM: AchievementsViewModel
     @StateObject private var friendsVM: FriendsViewModel
+    @StateObject private var pushManager: PushNotificationManager
 
     init() {
         #if DEBUG
@@ -53,6 +56,9 @@ struct BookTrackApp: App {
         _friendsVM = StateObject(
             wrappedValue: FriendsViewModel(service: friendService)
         )
+        _pushManager = StateObject(
+            wrappedValue: PushNotificationManager(client: networkClient)
+        )
     }
 
     var body: some Scene {
@@ -63,8 +69,18 @@ struct BookTrackApp: App {
                 .environmentObject(dashboardVM)
                 .environmentObject(achievementsVM)
                 .environmentObject(friendsVM)
+                .environmentObject(pushManager)
                 .task {
                     await sessionStore.bootstrap()
+                    sessionStore.pushManager = pushManager
+                    if sessionStore.isAuthenticated {
+                        await pushManager.requestPermission()
+                    }
+                }
+                .onChange(of: sessionStore.isAuthenticated) { _, isAuth in
+                    if isAuth {
+                        Task { await pushManager.requestPermission() }
+                    }
                 }
         }
     }

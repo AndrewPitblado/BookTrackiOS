@@ -87,7 +87,10 @@ final class SessionStore: ObservableObject {
         }
     }
 
+    var pushManager: PushNotificationManager?
+
     func logout() {
+        Task { await pushManager?.unregisterToken() }
         authService.logout()
         user = nil
     }
