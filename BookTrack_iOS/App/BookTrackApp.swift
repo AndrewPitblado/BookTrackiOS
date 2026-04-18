@@ -69,18 +69,11 @@ struct BookTrackApp: App {
                 .environmentObject(dashboardVM)
                 .environmentObject(achievementsVM)
                 .environmentObject(friendsVM)
-                .environmentObject(pushManager)
                 .task {
                     await sessionStore.bootstrap()
-                    sessionStore.pushManager = pushManager
-                    if sessionStore.isAuthenticated {
-                        await pushManager.requestPermission()
-                    }
                 }
-                .onChange(of: sessionStore.user?.id) { _, newId in
-                    if newId != nil {
-                        Task { await pushManager.requestPermission() }
-                    }
+                .task {
+                    await pushManager.requestPermission()
                 }
         }
     }
