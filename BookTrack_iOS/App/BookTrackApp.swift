@@ -77,8 +77,8 @@ struct BookTrackApp: App {
                         await pushManager.requestPermission()
                     }
                 }
-                .onChange(of: sessionStore.isAuthenticated) { _, isAuth in
-                    if isAuth {
+                .onChange(of: sessionStore.user?.id) { _, newId in
+                    if newId != nil {
                         Task { await pushManager.requestPermission() }
                     }
                 }
