@@ -11,6 +11,8 @@ import Foundation
 @MainActor
 final class DashboardViewModel: ObservableObject {
     @Published var userBooks: [UserBookDTO] = []
+    @Published var readingStreak: ReadingStreakDTO?
+    @Published var recentReadingLogs: [ReadingLogDTO] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
 
@@ -51,6 +53,14 @@ final class DashboardViewModel: ObservableObject {
         return finishedPages + readingPages
     }
 
+    var currentStreak: Int {
+        readingStreak?.currentStreak ?? 0
+    }
+
+    var longestStreak: Int {
+        readingStreak?.longestStreak ?? 0
+    }
+
     var currentlyReading: [UserBookDTO] {
         userBooks.filter { $0.status == .reading }
     }
@@ -72,6 +82,24 @@ final class DashboardViewModel: ObservableObject {
             errorMessage = error.errorDescription
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    /// Loads streak totals separately so the dashboard can adopt the new endpoint
+    /// without making the current library load dependent on backend rollout timing.
+    func loadReadingStreak() async {
+        do {
+            readingStreak = try await bookService.getReadingStreak()
+        } catch {
+            // Ignore until the server exposes the new endpoint.
+        }
+    }
+
+    func loadRecentReadingLogs(limit: Int = 10) async {
+        do {
+            recentReadingLogs = Array(try await bookService.getReadingLogs().prefix(limit))
+        } catch {
+            // Ignore until the server exposes the new endpoint.
         }
     }
 }

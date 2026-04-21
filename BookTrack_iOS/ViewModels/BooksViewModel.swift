@@ -126,6 +126,35 @@ final class BooksViewModel: ObservableObject {
         }
     }
 
+    /// Records a pages-read event before updating the aggregate book progress.
+    func logReadingProgress(for userBook: UserBookDTO, toPage newPage: Int) async {
+        errorMessage = nil
+
+        do {
+            if newPage > userBook.currentPage {
+                _ = try await bookService.createReadingLog(
+                    userBookId: userBook.id,
+                    pagesRead: newPage - userBook.currentPage,
+                    startPage: userBook.currentPage,
+                    endPage: newPage
+                )
+            }
+
+            let updated = try await bookService.updateUserBook(
+                id: userBook.id,
+                currentPage: newPage
+            )
+
+            if let index = userBooks.firstIndex(where: { $0.id == userBook.id }) {
+                userBooks[index] = updated
+            }
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func removeBook(id: Int) async {
         errorMessage = nil
         do {

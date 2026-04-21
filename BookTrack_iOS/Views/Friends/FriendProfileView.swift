@@ -81,8 +81,9 @@ struct FriendProfileView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             StatCard(value: "\(vm.stats?.reading ?? 0)", label: "Reading", icon: "book", color: .blue)
             StatCard(value: "\(vm.stats?.finished ?? 0)", label: "Finished", icon: "checkmark.circle", color: .green)
-            StatCard(value: "\(vm.stats?.achievements ?? 0)", label: "Achievements", icon: "trophy", color: .orange)
             StatCard(value: "\(vm.stats?.totalPoints ?? 0)", label: "Points", icon: "star.fill", color: .yellow)
+            StatCard(value: "\(vm.stats?.currentStreak ?? 0)", label: "Current Streak", icon: "flame.fill", color: .orange)
+            StatCard(value: "\(vm.stats?.longestStreak ?? 0)", label: "Best Streak", icon: "bolt.fill", color: .pink)
         }
     }
 

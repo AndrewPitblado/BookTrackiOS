@@ -104,4 +104,58 @@ final class BookService {
         let response: ReadHistoryResponse = try await client.send(endpoint)
         return response.history
     }
+
+    /// Get granular reading logs for streaks, recaps, and reading analytics.
+    func getReadingLogs(
+        userBookId: Int? = nil,
+        from startDate: String? = nil,
+        to endDate: String? = nil
+    ) async throws -> [ReadingLogDTO] {
+        var items: [URLQueryItem] = []
+        if let userBookId {
+            items.append(.init(name: "userBookId", value: "\(userBookId)"))
+        }
+        if let startDate, !startDate.isEmpty {
+            items.append(.init(name: "from", value: startDate))
+        }
+        if let endDate, !endDate.isEmpty {
+            items.append(.init(name: "to", value: endDate))
+        }
+
+        let endpoint = Endpoint(
+            path: "reading-logs",
+            method: "GET",
+            queryItems: items.isEmpty ? nil : items
+        )
+        let response: ReadingLogsResponse = try await client.send(endpoint)
+        return response.logs
+    }
+
+    /// Create a reading log entry that records pages read on a specific day.
+    func createReadingLog(
+        userBookId: Int,
+        pagesRead: Int,
+        startPage: Int? = nil,
+        endPage: Int? = nil,
+        loggedAt: String? = nil
+    ) async throws -> ReadingLogDTO {
+        let request = CreateReadingLogRequest(
+            userBookId: userBookId,
+            pagesRead: pagesRead,
+            startPage: startPage,
+            endPage: endPage,
+            loggedAt: loggedAt
+        )
+        let body = try JSONBody.encode(request)
+        let endpoint = Endpoint(path: "reading-logs", method: "POST", body: body)
+        let response: SingleReadingLogResponse = try await client.send(endpoint)
+        return response.log
+    }
+
+    /// Fetch the user's current and longest streak totals.
+    func getReadingStreak() async throws -> ReadingStreakDTO {
+        let endpoint = Endpoint(path: "users/me/streak", method: "GET")
+        let response: ReadingStreakResponse = try await client.send(endpoint)
+        return response.streak
+    }
 }

@@ -71,6 +71,8 @@ struct FriendStatsDTO: Decodable {
     let finished: Int
     let achievements: Int
     let totalPoints: Int
+    let currentStreak: Int?
+    let longestStreak: Int?
 }
 
 struct FriendStatsResponse: Decodable {

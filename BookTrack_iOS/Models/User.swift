@@ -14,6 +14,21 @@ struct UserDTO: Codable, Identifiable, Sendable {
     let username: String
     let email: String
     let createdAt: String?
+    let currentStreak: Int?
+    let longestStreak: Int?
+    let lastReadingDate: String?
+}
+
+// MARK: - User Reading Stats
+
+struct ReadingStreakDTO: Codable, Sendable {
+    let currentStreak: Int
+    let longestStreak: Int
+    let lastReadingDate: String?
+}
+
+struct ReadingStreakResponse: Decodable {
+    let streak: ReadingStreakDTO
 }
 
 // MARK: - Auth Responses

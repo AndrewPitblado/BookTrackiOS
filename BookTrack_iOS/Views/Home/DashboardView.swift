@@ -35,10 +35,11 @@ struct DashboardView: View {
                     .padding(.horizontal)
 
                     // Stats grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                         StatCard(title: "Reading", value: "\(dashboardVM.readingCount)", icon: "book.fill", color: .blue)
                         StatCard(title: "Finished", value: "\(dashboardVM.finishedCount)", icon: "checkmark.circle.fill", color: .green)
                         StatCard(title: "Pages", value: "\(dashboardVM.totalPages)", icon: "doc.text", color: .purple)
+                        StatCard(title: "Streak", value: "\(dashboardVM.currentStreak)", icon: "flame.fill", color: .orange)
                     }
                     .padding(.horizontal)
 
@@ -107,6 +108,9 @@ struct DashboardView: View {
             }
             .task {
                 await dashboardVM.load()
+            }
+            .task {
+                await dashboardVM.loadReadingStreak()
             }
         }
     }

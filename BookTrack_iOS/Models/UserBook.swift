@@ -83,6 +83,14 @@ struct UpdateUserBookRequest: Encodable {
     let notes: String?
 }
 
+struct CreateReadingLogRequest: Encodable {
+    let userBookId: Int
+    let pagesRead: Int
+    let startPage: Int?
+    let endPage: Int?
+    let loggedAt: String?
+}
+
 // MARK: - Read History
 
 struct ReadHistoryDTO: Codable, Identifiable {
@@ -100,4 +108,24 @@ struct ReadHistoryDTO: Codable, Identifiable {
 
 struct ReadHistoryResponse: Decodable {
     let history: [ReadHistoryDTO]
+}
+
+struct ReadingLogDTO: Codable, Identifiable {
+    let id: Int
+    let userId: Int
+    let userBookId: Int
+    let bookId: Int
+    let pagesRead: Int
+    let startPage: Int?
+    let endPage: Int?
+    let loggedAt: String
+}
+
+struct ReadingLogsResponse: Decodable {
+    let logs: [ReadingLogDTO]
+}
+
+struct SingleReadingLogResponse: Decodable {
+    let log: ReadingLogDTO
+    let message: String?
 }
