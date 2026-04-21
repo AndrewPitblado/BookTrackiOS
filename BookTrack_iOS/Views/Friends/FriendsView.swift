@@ -139,40 +139,32 @@ struct FriendsView: View {
     // MARK: - Search
 
     private var searchSection: some View {
-        VStack(spacing: 0) {
-            HStack {
-                TextField("Search by username...", text: $vm.searchQuery)
-                    .textFieldStyle(.roundedBorder)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .onSubmit { Task { await vm.searchUsers() } }
-
-                Button {
-                    Task { await vm.searchUsers() }
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .fontWeight(.semibold)
-                }
-                .disabled(vm.searchQuery.count < 2)
-            }
-            .padding()
-
+        List {
             if vm.searchResults.isEmpty && !vm.isLoading {
                 ContentUnavailableView(
                     "Find Friends",
                     systemImage: "person.badge.plus",
                     description: Text("Search for users by username.")
                 )
-            } else {
-                List {
-                    ForEach(vm.searchResults) { user in
-                        SearchResultRow(user: user, onAdd: {
-                            Task { await vm.sendRequest(to: user.id) }
-                        })
-                    }
-                }
-                .listStyle(.plain)
             }
+
+            ForEach(vm.searchResults) { user in
+                SearchResultRow(user: user, onAdd: {
+                    Task { await vm.sendRequest(to: user.id) }
+                })
+            }
+        }
+        .listStyle(.plain)
+        .searchable(text: $vm.searchQuery, prompt: "Enter a username")
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .onSubmit(of: .search) {
+            guard vm.searchQuery.count >= 2 else { return }
+            Task { await vm.searchUsers() }
+        }
+        .refreshable {
+            guard vm.searchQuery.count >= 2 else { return }
+            await vm.searchUsers()
         }
     }
 }

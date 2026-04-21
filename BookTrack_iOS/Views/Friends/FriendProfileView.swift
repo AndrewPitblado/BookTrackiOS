@@ -205,6 +205,20 @@ private struct FriendBookRow: View {
                     ProgressView(value: Double(current), total: Double(pageCount))
                         .tint(.blue)
                 }
+
+                if let notes = userBook.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !notes.isEmpty {
+                    Label {
+                        Text(notes)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    } icon: {
+                        Image(systemName: "quote.bubble")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
 
             Spacer()

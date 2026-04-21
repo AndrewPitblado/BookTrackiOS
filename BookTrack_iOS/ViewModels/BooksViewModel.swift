@@ -112,18 +112,20 @@ final class BooksViewModel: ObservableObject {
         }
     }
 
-    func updateBook(id: Int, status: ReadingStatus? = nil, currentPage: Int? = nil, rating: Double? = nil, notes: String? = nil) async {
+    func updateBook(id: Int, status: ReadingStatus? = nil, currentPage: Int? = nil, rating: Double? = nil, notes: String? = nil) async -> UserBookDTO? {
         errorMessage = nil
         do {
             let updated = try await bookService.updateUserBook(id: id, status: status, currentPage: currentPage, rating: rating, notes: notes)
             if let index = userBooks.firstIndex(where: { $0.id == id }) {
                 userBooks[index] = updated
             }
+            return updated
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
             errorMessage = error.localizedDescription
         }
+        return nil
     }
 
     /// Records a pages-read event before updating the aggregate book progress.

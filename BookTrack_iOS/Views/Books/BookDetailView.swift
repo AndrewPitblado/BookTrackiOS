@@ -17,8 +17,33 @@ struct BookDetailView: View {
     @State private var currentPage: String
     @State private var rating: Double
     @State private var notes: String
+    @State private var savedState: SavedState
     @State private var isSaving = false
     @State private var showDeleteConfirm = false
+    @FocusState private var focusedField: Field?
+
+    private enum Field {
+        case currentPage
+        case notes
+    }
+
+    private struct SavedState {
+        let status: ReadingStatus
+        let currentPage: String
+        let rating: Double
+        let notes: String
+
+        init(userBook: UserBookDTO) {
+            status = userBook.status
+            currentPage = "\(userBook.currentPage)"
+            rating = userBook.rating ?? 0
+            notes = userBook.notes ?? ""
+        }
+
+        init(updatedBook: UserBookDTO) {
+            self.init(userBook: updatedBook)
+        }
+    }
 
     init(userBook: UserBookDTO) {
         self.userBook = userBook
@@ -26,13 +51,14 @@ struct BookDetailView: View {
         _currentPage = State(initialValue: "\(userBook.currentPage)")
         _rating = State(initialValue: userBook.rating ?? 0)
         _notes = State(initialValue: userBook.notes ?? "")
+        _savedState = State(initialValue: SavedState(userBook: userBook))
     }
 
     private var hasChanges: Bool {
-        selectedStatus != userBook.status
-        || currentPage != "\(userBook.currentPage)"
-        || rating != (userBook.rating ?? 0)
-        || notes != (userBook.notes ?? "")
+        selectedStatus != savedState.status
+        || currentPage != savedState.currentPage
+        || rating != savedState.rating
+        || notes != savedState.notes
     }
 
     var body: some View {
@@ -94,6 +120,14 @@ struct BookDetailView: View {
         }
         .navigationTitle("Book Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focusedField = nil
+                }
+            }
+        }
         .confirmationDialog("Remove this book?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("Remove", role: .destructive) {
                 Task {
@@ -173,6 +207,7 @@ struct BookDetailView: View {
             HStack {
                 TextField("Current page", text: $currentPage)
                     .keyboardType(.numberPad)
+                    .focused($focusedField, equals: .currentPage)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 80)
                 if let total = userBook.book.pageCount {
@@ -221,6 +256,7 @@ struct BookDetailView: View {
             Text("Notes")
                 .font(.headline)
             TextField("Add your thoughts...", text: $notes, axis: .vertical)
+                .focused($focusedField, equals: .notes)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(3...6)
         }
@@ -239,16 +275,25 @@ struct BookDetailView: View {
     }
 
     private func save() async {
+        focusedField = nil
         isSaving = true
         defer { isSaving = false }
 
-        await booksVM.updateBook(
+        let updatedBook = await booksVM.updateBook(
             id: userBook.id,
-            status: selectedStatus != userBook.status ? selectedStatus : nil,
+            status: selectedStatus != savedState.status ? selectedStatus : nil,
             currentPage: Int(currentPage),
             rating: selectedStatus == .finished && rating > 0 ? rating : nil,
             notes: notes.isEmpty ? nil : notes
         )
+
+        if let updatedBook {
+            savedState = SavedState(updatedBook: updatedBook)
+            selectedStatus = updatedBook.status
+            currentPage = "\(updatedBook.currentPage)"
+            rating = updatedBook.rating ?? 0
+            notes = updatedBook.notes ?? ""
+        }
     }
 }
 
