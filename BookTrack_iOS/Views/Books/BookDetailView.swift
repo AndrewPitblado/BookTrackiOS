@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BookDetailView: View {
     @EnvironmentObject private var booksVM: BooksViewModel
+    @EnvironmentObject private var dashboardVM: DashboardViewModel
     @Environment(\.dismiss) private var dismiss
 
     let userBook: UserBookDTO
@@ -293,6 +294,9 @@ struct BookDetailView: View {
             currentPage = "\(updatedBook.currentPage)"
             rating = updatedBook.rating ?? 0
             notes = updatedBook.notes ?? ""
+
+            await dashboardVM.load()
+            await dashboardVM.loadReadingStreak()
         }
     }
 }

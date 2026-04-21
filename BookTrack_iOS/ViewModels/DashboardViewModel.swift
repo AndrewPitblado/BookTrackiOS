@@ -95,6 +95,10 @@ final class DashboardViewModel: ObservableObject {
 
         do {
             userBooks = try await bookService.getUserBooks()
+        } catch is CancellationError {
+            return
+        } catch let error as URLError where error.code == .cancelled {
+            return
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
@@ -110,6 +114,10 @@ final class DashboardViewModel: ObservableObject {
     func loadReadingStreak() async {
         do {
             readingStreak = try await bookService.getReadingStreak()
+        } catch is CancellationError {
+            return
+        } catch let error as URLError where error.code == .cancelled {
+            return
         } catch {
             // Ignore until the server exposes the new endpoint.
         }
@@ -119,6 +127,10 @@ final class DashboardViewModel: ObservableObject {
         do {
             let logs = try await bookService.getReadingLogs()
             recentReadingLogs = Array(logs.prefix(limit))
+        } catch is CancellationError {
+            return
+        } catch let error as URLError where error.code == .cancelled {
+            return
         } catch {
             // Ignore until the server exposes the new endpoint.
         }
@@ -128,6 +140,10 @@ final class DashboardViewModel: ObservableObject {
         do {
             goals = try await goalsService.getGoals()
             goalErrorMessage = nil
+        } catch is CancellationError {
+            return
+        } catch let error as URLError where error.code == .cancelled {
+            return
         } catch let error as APIError {
             goalErrorMessage = error.errorDescription
         } catch {
