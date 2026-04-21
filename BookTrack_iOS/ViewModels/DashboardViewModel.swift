@@ -11,15 +11,20 @@ import Foundation
 @MainActor
 final class DashboardViewModel: ObservableObject {
     @Published var userBooks: [UserBookDTO] = []
+    @Published var goals: [GoalDTO] = []
     @Published var readingStreak: ReadingStreakDTO?
     @Published var recentReadingLogs: [ReadingLogDTO] = []
     @Published var isLoading = false
+    @Published var isSavingGoal = false
     @Published var errorMessage: String?
+    @Published var goalErrorMessage: String?
 
     private let bookService: BookService
+    private let goalsService: GoalsService
 
-    init(bookService: BookService) {
+    init(bookService: BookService, goalsService: GoalsService) {
         self.bookService = bookService
+        self.goalsService = goalsService
     }
 
     /// No-argument initialiser for SwiftUI previews.
@@ -30,6 +35,7 @@ final class DashboardViewModel: ObservableObject {
             tokenStore: tokenStore
         )
         self.bookService = BookService(client: client)
+        self.goalsService = GoalsService(client: client)
     }
 
     // MARK: - Computed stats
@@ -69,6 +75,17 @@ final class DashboardViewModel: ObservableObject {
         Array(userBooks.prefix(5))
     }
 
+    var activeGoalProgress: [GoalProgress] {
+        goals
+            .filter(\.isActive)
+            .map { GoalProgress(goal: $0, progress: progress(for: $0)) }
+            .sorted(by: goalProgressSort)
+    }
+
+    var highlightedGoalProgress: [GoalProgress] {
+        Array(activeGoalProgress.prefix(3))
+    }
+
     // MARK: - Load
 
     func load() async {
@@ -83,6 +100,9 @@ final class DashboardViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
         }
+
+        await loadGoals()
+        await loadRecentReadingLogs()
     }
 
     /// Loads streak totals separately so the dashboard can adopt the new endpoint
@@ -97,9 +117,190 @@ final class DashboardViewModel: ObservableObject {
 
     func loadRecentReadingLogs(limit: Int = 10) async {
         do {
-            recentReadingLogs = Array(try await bookService.getReadingLogs().prefix(limit))
+            let logs = try await bookService.getReadingLogs()
+            recentReadingLogs = Array(logs.prefix(limit))
         } catch {
             // Ignore until the server exposes the new endpoint.
         }
+    }
+
+    func loadGoals() async {
+        do {
+            goals = try await goalsService.getGoals()
+            goalErrorMessage = nil
+        } catch let error as APIError {
+            goalErrorMessage = error.errorDescription
+        } catch {
+            goalErrorMessage = error.localizedDescription
+        }
+    }
+
+    func createGoal(
+        period: GoalPeriod,
+        metric: GoalMetric,
+        target: Int,
+        isActive: Bool = true,
+        isPrimary: Bool = false
+    ) async -> Bool {
+        isSavingGoal = true
+        goalErrorMessage = nil
+        defer { isSavingGoal = false }
+
+        do {
+            let createdGoal = try await goalsService.createGoal(
+                period: period,
+                metric: metric,
+                target: target,
+                isActive: isActive,
+                isPrimary: isPrimary
+            )
+            goals.append(createdGoal)
+            goals.sort(by: sortGoals)
+            return true
+        } catch let error as APIError {
+            goalErrorMessage = error.errorDescription
+        } catch {
+            goalErrorMessage = error.localizedDescription
+        }
+
+        return false
+    }
+
+    func updateGoal(
+        id: Int,
+        target: Int,
+        isActive: Bool,
+        isPrimary: Bool
+    ) async -> Bool {
+        isSavingGoal = true
+        goalErrorMessage = nil
+        defer { isSavingGoal = false }
+
+        do {
+            let updatedGoal = try await goalsService.updateGoal(
+                id: id,
+                target: target,
+                isActive: isActive,
+                isPrimary: isPrimary
+            )
+            if let index = goals.firstIndex(where: { $0.id == id }) {
+                goals[index] = updatedGoal
+                goals.sort(by: sortGoals)
+            }
+            return true
+        } catch let error as APIError {
+            goalErrorMessage = error.errorDescription
+        } catch {
+            goalErrorMessage = error.localizedDescription
+        }
+
+        return false
+    }
+
+    func deleteGoal(id: Int) async -> Bool {
+        isSavingGoal = true
+        goalErrorMessage = nil
+        defer { isSavingGoal = false }
+
+        do {
+            try await goalsService.deleteGoal(id: id)
+            goals.removeAll { $0.id == id }
+            return true
+        } catch let error as APIError {
+            goalErrorMessage = error.errorDescription
+        } catch {
+            goalErrorMessage = error.localizedDescription
+        }
+
+        return false
+    }
+
+    // MARK: - Goal Progress
+
+    private func progress(for goal: GoalDTO) -> Int {
+        switch goal.metric {
+        case .pages:
+            return recentReadingLogs
+                .filter { isDate($0.loggedAt, within: goal.period) }
+                .reduce(0) { $0 + $1.pagesRead }
+        case .books:
+            return userBooks
+                .filter { $0.status == .finished }
+                .filter { isDate($0.endDate, within: goal.period) }
+                .count
+        }
+    }
+
+    private func goalProgressSort(lhs: GoalProgress, rhs: GoalProgress) -> Bool {
+        sortGoals(lhs: lhs.goal, rhs: rhs.goal)
+    }
+
+    private func sortGoals(lhs: GoalDTO, rhs: GoalDTO) -> Bool {
+        if lhs.isActive != rhs.isActive {
+            return lhs.isActive && !rhs.isActive
+        }
+        if lhs.period != rhs.period {
+            return periodRank(lhs.period) < periodRank(rhs.period)
+        }
+        if lhs.isPrimary != rhs.isPrimary {
+            return lhs.isPrimary == true
+        }
+        if lhs.metric != rhs.metric {
+            return metricRank(lhs.metric) < metricRank(rhs.metric)
+        }
+        return lhs.target < rhs.target
+    }
+
+    private func periodRank(_ period: GoalPeriod) -> Int {
+        switch period {
+        case .daily:
+            return 0
+        case .weekly:
+            return 1
+        case .monthly:
+            return 2
+        case .yearly:
+            return 3
+        }
+    }
+
+    private func metricRank(_ metric: GoalMetric) -> Int {
+        switch metric {
+        case .pages:
+            return 0
+        case .books:
+            return 1
+        }
+    }
+
+    private func isDate(_ rawValue: String?, within period: GoalPeriod) -> Bool {
+        guard let date = parseDate(rawValue) else { return false }
+        let calendar = Calendar.current
+        let now = Date()
+
+        switch period {
+        case .daily:
+            return calendar.isDate(date, inSameDayAs: now)
+        case .weekly:
+            return calendar.isDate(date, equalTo: now, toGranularity: .weekOfYear)
+        case .monthly:
+            return calendar.isDate(date, equalTo: now, toGranularity: .month)
+        case .yearly:
+            return calendar.isDate(date, equalTo: now, toGranularity: .year)
+        }
+    }
+
+    private func parseDate(_ rawValue: String?) -> Date? {
+        guard let rawValue, !rawValue.isEmpty else { return nil }
+
+        if let date = ISO8601DateFormatter().date(from: rawValue) {
+            return date
+        }
+
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: rawValue)
     }
 }

@@ -32,6 +32,7 @@ struct BookTrackApp: App {
         let networkClient = NetworkClient(baseURL: baseURL, tokenStore: tokenStore)
         let authService = AuthService(client: networkClient, tokenStore: tokenStore)
         let bookService = BookService(client: networkClient)
+        let goalsService = GoalsService(client: networkClient)
         let achievementService = AchievementService(client: networkClient)
         let friendService = FriendService(client: networkClient)
 
@@ -48,7 +49,7 @@ struct BookTrackApp: App {
             wrappedValue: BooksViewModel(bookService: bookService)
         )
         _dashboardVM = StateObject(
-            wrappedValue: DashboardViewModel(bookService: bookService)
+            wrappedValue: DashboardViewModel(bookService: bookService, goalsService: goalsService)
         )
         _achievementsVM = StateObject(
             wrappedValue: AchievementsViewModel(service: achievementService)

@@ -10,6 +10,7 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject private var session: SessionStore
     @EnvironmentObject private var dashboardVM: DashboardViewModel
+    @State private var showingGoalsSheet = false
 
     var body: some View {
         NavigationStack {
@@ -42,6 +43,8 @@ struct DashboardView: View {
                         StatCard(title: "Streak", value: "\(dashboardVM.currentStreak)", icon: "flame.fill", color: .orange)
                     }
                     .padding(.horizontal)
+
+                    goalsSection
 
                     // Currently reading
                     if !dashboardVM.currentlyReading.isEmpty {
@@ -111,6 +114,59 @@ struct DashboardView: View {
             }
             .task {
                 await dashboardVM.loadReadingStreak()
+            }
+            .sheet(isPresented: $showingGoalsSheet) {
+                GoalsManagementView()
+                    .environmentObject(dashboardVM)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var goalsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Goals")
+                    .font(.headline)
+                Spacer()
+                if !dashboardVM.activeGoalProgress.isEmpty {
+                    Text("\(dashboardVM.activeGoalProgress.count) active")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Button("Manage") {
+                    showingGoalsSheet = true
+                }
+                .font(.caption.weight(.semibold))
+            }
+            .padding(.horizontal)
+
+            if dashboardVM.highlightedGoalProgress.isEmpty {
+                ContentUnavailableView {
+                    Label("No Active Goals", systemImage: "target")
+                } description: {
+                    Text("Add your first reading goal to get started.")
+                } actions: {
+                    Button("Add Goal") {
+                        showingGoalsSheet = true
+                    }
+                }
+                .padding(.horizontal)
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(dashboardVM.highlightedGoalProgress) { goalProgress in
+                        GoalProgressCard(goalProgress: goalProgress)
+                    }
+
+                    if dashboardVM.activeGoalProgress.count > dashboardVM.highlightedGoalProgress.count {
+                        Button("View All Goals") {
+                            showingGoalsSheet = true
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.horizontal)
             }
         }
     }
@@ -222,6 +278,67 @@ private struct RecentBookRow: View {
                 .foregroundStyle(statusColor)
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Goal Progress Card
+
+private struct GoalProgressCard: View {
+    let goalProgress: GoalProgress
+
+    private var tint: Color {
+        switch goalProgress.goal.metric {
+        case .pages:
+            return .indigo
+        case .books:
+            return .blue
+        }
+    }
+
+    private var targetLabel: String {
+        let target = goalProgress.goal.target
+        let metric = target == 1 ? goalProgress.goal.metric.singularTitle : goalProgress.goal.metric.title.lowercased()
+        return "\(goalProgress.goal.period.shortTitle) • \(target) \(metric)"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                Label(goalProgress.goal.metric.title, systemImage: goalProgress.goal.metric.icon)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(tint)
+
+                Spacer()
+
+                Text(goalProgress.goal.period.title)
+                    .font(.caption.weight(.medium))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(tint.opacity(0.12))
+                    .foregroundStyle(tint)
+                    .clipShape(Capsule())
+            }
+
+            Text(targetLabel)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            ProgressView(value: goalProgress.progressFraction)
+                .tint(tint)
+
+            HStack {
+                Text(goalProgress.summaryText)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text(goalProgress.isCompleted ? "Complete" : "\(Int(goalProgress.progressFraction * 100))%")
+                    .font(.caption)
+                    .foregroundStyle(goalProgress.isCompleted ? .green : .secondary)
+            }
+        }
+        .padding()
+        .background(.fill.tertiary)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
