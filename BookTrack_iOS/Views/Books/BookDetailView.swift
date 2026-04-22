@@ -133,6 +133,7 @@ struct BookDetailView: View {
             Button("Remove", role: .destructive) {
                 Task {
                     await booksVM.removeBook(id: userBook.id)
+                    dashboardVM.removeBook(id: userBook.id)
                     dismiss()
                 }
             }
@@ -280,13 +281,48 @@ struct BookDetailView: View {
         isSaving = true
         defer { isSaving = false }
 
-        let updatedBook = await booksVM.updateBook(
-            id: userBook.id,
-            status: selectedStatus != savedState.status ? selectedStatus : nil,
-            currentPage: Int(currentPage),
-            rating: selectedStatus == .finished && rating > 0 ? rating : nil,
-            notes: notes.isEmpty ? nil : notes
-        )
+        let previousCurrentPage = Int(savedState.currentPage) ?? userBook.currentPage
+        let parsedCurrentPage = Int(currentPage) ?? previousCurrentPage
+        let statusChanged = selectedStatus != savedState.status
+        let ratingChanged = rating != savedState.rating
+        let notesChanged = notes != savedState.notes
+        let pageIncreasedWhileReading = selectedStatus == .reading && parsedCurrentPage > previousCurrentPage
+        let requiresDirectUpdate =
+            statusChanged
+            || (!pageIncreasedWhileReading && parsedCurrentPage != previousCurrentPage)
+            || ratingChanged
+            || notesChanged
+
+        var updatedBook: UserBookDTO?
+
+        if pageIncreasedWhileReading {
+            let progressSource = UserBookDTO(
+                id: userBook.id,
+                userId: userBook.userId,
+                bookId: userBook.bookId,
+                status: savedState.status,
+                startDate: userBook.startDate,
+                endDate: userBook.endDate,
+                currentPage: previousCurrentPage,
+                rating: userBook.rating,
+                notes: userBook.notes,
+                readHistoryId: userBook.readHistoryId,
+                Book: userBook.Book
+            )
+
+            await booksVM.logReadingProgress(for: progressSource, toPage: parsedCurrentPage)
+            updatedBook = booksVM.userBooks.first(where: { $0.id == userBook.id })
+        }
+
+        if requiresDirectUpdate {
+            updatedBook = await booksVM.updateBook(
+                id: userBook.id,
+                status: statusChanged ? selectedStatus : nil,
+                currentPage: parsedCurrentPage,
+                rating: selectedStatus == .finished && rating > 0 ? rating : nil,
+                notes: notes.isEmpty ? nil : notes
+            )
+        }
 
         if let updatedBook {
             savedState = SavedState(updatedBook: updatedBook)
@@ -295,7 +331,8 @@ struct BookDetailView: View {
             rating = updatedBook.rating ?? 0
             notes = updatedBook.notes ?? ""
 
-            await dashboardVM.load()
+            dashboardVM.applyUpdatedBook(updatedBook)
+            await dashboardVM.loadRecentReadingLogs()
             await dashboardVM.loadReadingStreak()
         }
     }

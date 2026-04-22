@@ -78,7 +78,10 @@ final class DashboardViewModel: ObservableObject {
     var activeGoalProgress: [GoalProgress] {
         goals
             .filter(\.isActive)
-            .map { GoalProgress(goal: $0, progress: progress(for: $0)) }
+            .map {
+                let serverProgress = $0.progress?.currentValue
+                return GoalProgress(goal: $0, progress: serverProgress ?? progress(for: $0))
+            }
             .sorted(by: goalProgressSort)
     }
 
@@ -229,6 +232,18 @@ final class DashboardViewModel: ObservableObject {
         }
 
         return false
+    }
+
+    func applyUpdatedBook(_ userBook: UserBookDTO) {
+        if let index = userBooks.firstIndex(where: { $0.id == userBook.id }) {
+            userBooks[index] = userBook
+        } else {
+            userBooks.insert(userBook, at: 0)
+        }
+    }
+
+    func removeBook(id: Int) {
+        userBooks.removeAll { $0.id == id }
     }
 
     // MARK: - Goal Progress

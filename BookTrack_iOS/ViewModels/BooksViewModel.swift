@@ -128,20 +128,11 @@ final class BooksViewModel: ObservableObject {
         return nil
     }
 
-    /// Records a pages-read event before updating the aggregate book progress.
+    /// Updates page progress. The server computes page deltas and writes reading logs.
     func logReadingProgress(for userBook: UserBookDTO, toPage newPage: Int) async {
         errorMessage = nil
 
         do {
-            if newPage > userBook.currentPage {
-                _ = try await bookService.createReadingLog(
-                    userBookId: userBook.id,
-                    pagesRead: newPage - userBook.currentPage,
-                    startPage: userBook.currentPage,
-                    endPage: newPage
-                )
-            }
-
             let updated = try await bookService.updateUserBook(
                 id: userBook.id,
                 currentPage: newPage

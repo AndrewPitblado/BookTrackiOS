@@ -86,6 +86,7 @@ struct GoalDTO: Codable, Identifiable, Hashable {
     let endDate: String?
     let isActive: Bool
     let isPrimary: Bool?
+    let progress: GoalServerProgressDTO?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -97,7 +98,18 @@ struct GoalDTO: Codable, Identifiable, Hashable {
         case endDate
         case isActive
         case isPrimary
+        case progress
     }
+}
+
+struct GoalServerProgressDTO: Codable, Hashable {
+    let currentValue: Int
+    let target: Int?
+    let remaining: Int?
+    let isComplete: Bool?
+    let percentComplete: Double?
+    let periodStart: String?
+    let periodEnd: String?
 }
 
 struct GoalsResponse: Decodable {
