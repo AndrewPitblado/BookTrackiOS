@@ -1,5 +1,43 @@
 {
-  "fill" : "automatic",
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:1.00000,0.66070,0.45735,1.00000",
+          "display-p3:0.96783,0.92873,0.93914,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 0.7
+          }
+        }
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.30320,0.22861,0.13092,1.00000",
+          "display-p3:0.00000,0.00000,0.00000,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 0.7
+          }
+        }
+      }
+    }
+  ],
   "groups" : [
     {
       "layers" : [
@@ -43,13 +81,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "display-p3:0.96783,0.58465,0.28681,1.00000"
+                "automatic-gradient" : "display-p3:0.96783,0.58465,0.28681,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "display-p3:0.55604,0.36067,0.26368,1.00000"
+                "automatic-gradient" : "display-p3:0.55604,0.36067,0.26368,1.00000"
               }
             },
             {
@@ -61,8 +99,56 @@
           ],
           "image-name" : "2 – Layer.svg",
           "name" : "2 – Layer",
+          "opacity-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : 1
+            }
+          ],
           "position" : {
             "scale" : 1.25,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "blend-mode-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : {
+                "automatic-gradient" : "display-p3:0.96783,0.58465,0.28681,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "automatic-gradient" : "display-p3:0.55604,0.36067,0.26368,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "display-p3:0.00000,0.00000,0.00000,1.00000"
+              }
+            }
+          ],
+          "image-name" : "2 – Layer.svg",
+          "name" : "2 – Layer",
+          "opacity-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : 1
+            }
+          ],
+          "position" : {
+            "scale" : 1.35,
             "translation-in-points" : [
               0,
               0
@@ -87,8 +173,8 @@
             {
               "value" : {
                 "linear-gradient" : [
-                  "display-p3:1.00000,0.86476,0.71513,1.00000",
-                  "display-p3:0.96783,0.92322,0.94094,1.00000"
+                  "display-p3:1.00000,0.71925,0.45089,1.00000",
+                  "display-p3:0.96783,0.79234,0.70316,1.00000"
                 ],
                 "orientation" : {
                   "start" : {
@@ -105,20 +191,7 @@
             {
               "appearance" : "dark",
               "value" : {
-                "linear-gradient" : [
-                  "display-p3:0.33426,0.24868,0.18726,1.00000",
-                  "display-p3:0.38594,0.30315,0.30161,1.00000"
-                ],
-                "orientation" : {
-                  "start" : {
-                    "x" : 0.5,
-                    "y" : 0
-                  },
-                  "stop" : {
-                    "x" : 0.5,
-                    "y" : 0.7
-                  }
-                }
+                "solid" : "display-p3:0.33426,0.24868,0.18726,1.00000"
               }
             },
             {
@@ -131,10 +204,10 @@
           "image-name" : "1 – Layer.svg",
           "name" : "1 – Layer",
           "position" : {
-            "scale" : 1.25,
+            "scale" : 1.35,
             "translation-in-points" : [
-              0,
-              0
+              0.6750000000000682,
+              0.6749999999999545
             ]
           }
         }

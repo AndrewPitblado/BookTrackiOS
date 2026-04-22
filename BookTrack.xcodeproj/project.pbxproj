@@ -6,9 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F9EBBE852F99091100910252 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F9EBBE842F99091100910252 /* Launch Screen.storyboard */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F90D34D42F8F9D33008D2925 /* BookTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F99BDA872F9328FC009303A2 /* BookTrack.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BookTrack.entitlements; sourceTree = "<group>"; };
+		F9EBBE842F99091100910252 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,6 +38,7 @@
 		F90D34CB2F8F9D33008D2925 = {
 			isa = PBXGroup;
 			children = (
+				F9EBBE842F99091100910252 /* Launch Screen.storyboard */,
 				F99BDA872F9328FC009303A2 /* BookTrack.entitlements */,
 				F90D34D62F8F9D33008D2925 /* BookTrack_iOS */,
 				F90D34D52F8F9D33008D2925 /* Products */,
@@ -111,6 +117,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9EBBE852F99091100910252 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
